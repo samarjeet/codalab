@@ -6,6 +6,9 @@ var TableBundle = React.createClass({
         this.props.item.state.checked = false;
         return this.props.item.state;
     },
+    componentDidMount: function(){
+        new Tablesort(document.getElementById(this.props.ref));
+    },
     deleteCheckedRows: function(){
         console.log('delete checked rows');
         // // do basically the same thing we do in worksheet_content's insertItem and cleanUp methods
@@ -52,12 +55,13 @@ var TableBundle = React.createClass({
     render: function() {
         var item = this.props.item.state;
         var canEdit = this.props.canEdit;
+        var sortable = canEdit ? 'no-sort' : 'sort-header';
         var checkbox = canEdit ? <th width="20"><input type="checkbox" className="ws-checkbox" onChange={this.handleCheck} checked={this.state.checked} /></th> : null;
         var className = 'table table-responsive' + (this.props.focused ? ' focused' : '');
         var bundle_info = item.bundle_info;
         var header_items = item.interpreted[0];
         var header_html = header_items.map(function(item, index) {
-                return <th key={index}> {item} </th>;
+                return <th key={index} className={sortable}> {item} </th>;
             });
         var focusIndex = this.state.rowFocusIndex;
         var row_items = item.interpreted[1];
@@ -69,7 +73,7 @@ var TableBundle = React.createClass({
         });
         return(
             <div className="ws-item" onClick={this.handleClick}>
-                <table className={className} onKeyDown={this.handleKeyboardShortcuts}>
+                <table id={this.props.ref} className={className} onKeyDown={this.handleKeyboardShortcuts}>
                     <thead>
                         <tr>
                             {checkbox}
@@ -95,7 +99,8 @@ var TableRow = React.createClass({
         this.setState({checked: !this.state.checked});
     },
     render: function(){
-        var focusedClass = this.props.focused ? 'focused' : '';
+        var rowClass = this.props.focused ? 'focused' : '';
+        rowClass += this.props.canEdit ? ' no-sort' : '';
         var row_item = this.props.item;
         var header_items = this.props.headerItems;
         var bundle_url = this.props.bundleURL;
@@ -114,7 +119,7 @@ var TableRow = React.createClass({
             }
         });
         return (
-            <tr className={focusedClass}>
+            <tr className={rowClass}>
                 {checkbox}
                 {row_cells}
             </tr>

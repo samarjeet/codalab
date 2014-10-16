@@ -32,6 +32,7 @@ local.properties
 ####################
 **/**/venv
 venv/
+codalab/
 
 #################
 ## Visual Studio
